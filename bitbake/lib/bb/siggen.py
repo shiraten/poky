@@ -432,14 +432,16 @@ class SignatureGeneratorUniHashMixIn(object):
         return super().get_stampfile_hash(tid)
 
     def set_unihash(self, tid, unihash):
-        key = self.tidtopn[tid] + ":" + bb.runqueue.taskname_from_tid(tid)
+        (mc, fn, taskname, taskfn) = bb.runqueue.split_tid_mcfn(tid)
+        key = mc + ":" + self.tidtopn[tid] + ":" + taskname
         self.unitaskhashes[key] = (self.taskhash[tid], unihash)
         self.unihash[tid] = unihash
 
     def _get_unihash(self, tid, checkkey=None):
         if tid not in self.tidtopn:
             return None
-        key = self.tidtopn[tid] + ":" + bb.runqueue.taskname_from_tid(tid)
+        (mc, fn, taskname, taskfn) = bb.runqueue.split_tid_mcfn(tid)
+        key = mc + ":" + self.tidtopn[tid] + ":" + taskname
         if key not in self.unitaskhashes:
             return None
         if not checkkey:
